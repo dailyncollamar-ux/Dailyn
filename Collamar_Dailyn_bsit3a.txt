@@ -1,0 +1,39 @@
+let studentName = "nami";
+let passingScore = 75;
+let totalStudents = 0;
+
+let scores = [88, 45, 92, 60, 100, 30];
+let names = ["nami", "Assie", "Timothy", "Monay", "akira", "ale"];
+let results = []; 
+
+for (let i = 0; i < scores.length; i++) {
+  let score = scores[i];
+  let name = names[i];
+  totalStudents++;
+
+   if (score >= passingScore) {
+    results.push(`${name}: PASS (${score})`);
+  } else if (score >= 50) {
+    results.push(`${name}: NEEDS IMPROVEMENT (${score})`);
+  } else {
+    results.push(`${name}: FAIL (${score})`);
+  }
+}
+
+let index = 0;
+console.log("---- Student Results ----");
+while (index < results.length) {
+  console.log(results[index]);
+  index++;
+}
+
+let total = 0;
+for (const score of scores) {
+  total += score;
+}
+let average = total / scores.length;
+
+console.log("--------------------------");
+console.log(`Total students: ${totalStudents}`);
+console.log(`Average score: ${average.toFixed(2)}`);
+
