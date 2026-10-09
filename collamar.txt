@@ -1,0 +1,158 @@
+let libraryName = "City Library";     
+const maxItemsPerMember = 3;           
+let totalCheckouts = 0;               
+const libraryConfig = {                
+  location: "Main Street",
+};
+ 
+const membershipRules = {              
+  finePerDay: 0.5,
+  maxRenewals: 2,
+};
+ 
+class Media {
+  #isCheckedOut = false;
+  #id;
+ 
+  constructor(title, genre) {
+    if (new.target === Media) {
+      throw new Error("Media is abstract and cannot be instantiated directly.");
+    }
+    this.title = title;
+    this.genre = genre;
+    this.#id = Math.floor(Math.random() * 100000);
+  }
+ 
+  getInfo() {
+    throw new Error("getInfo() must be implemented by subclass");
+  }
+ 
+  checkOut() {
+    if (!this.#isCheckedOut) {
+      this.#isCheckedOut = true;
+      totalCheckouts++;
+      return true;
+    } else {
+      return false;
+    }
+  }
+ 
+  returnItem() {
+    this.#isCheckedOut = false;
+  }
+ 
+  isAvailable() {
+    return !this.#isCheckedOut;
+  }
+ 
+  getId() {
+    return this.#id;
+  }
+}
+ 
+class Book extends Media {
+  constructor(title, genre, author, pages) {
+    super(title, genre); 
+    this.author = author;
+    this.pages = pages;
+  }
+ 
+  getInfo() {
+    return `📖 "${this.title}" by ${this.author} (${this.pages} pages) [${this.genre}]`;
+  }
+}
+ 
+class Movie extends Media {
+  constructor(title, genre, director, duration) {
+    super(title, genre);
+    this.director = director;
+    this.duration = duration;
+  }
+ 
+  getInfo() {
+    return `🎬 "${this.title}" directed by ${this.director} (${this.duration} min) [${this.genre}]`;
+  }
+}
+ 
+class Library {
+  #catalog = [];
+ 
+  constructor(name) {
+    this.name = name;
+    this.loans = []; 
+  }
+ 
+
+  addItem(item) {
+    this.#catalog.push(item);
+  }
+ 
+  listAvailableItems() {
+    const available = []; 
+ 
+    for (let i = 0; i < this.#catalog.length; i++) {
+      const item = this.#catalog[i];
+    
+      if (item.isAvailable()) {
+        available.push(item.getInfo());
+      }
+    }
+    return available;
+  }
+ 
+  checkOutItem(title) {
+    let found = null;
+ 
+    for (const item of this.#catalog) {
+      if (item.title === title) {
+        found = item;
+        break;
+      }
+    }
+ 
+    if (found && found.checkOut()) {
+      this.loans.push(found.getId());
+      return `✅ You checked out: ${found.getInfo()}`;
+    } else if (found) {
+      return `❌ "${title}" is already checked out.`;
+    } else {
+      return `⚠️ "${title}" not found in catalog.`;
+    }
+  }
+ 
+  printCatalogSummary() {
+    console.log(`--- ${this.name} Catalog Summary ---`);
+    console.log(`Hours: ${libraryConfig.openHours}, Location: ${libraryConfig.location}`);
+ 
+    let index = 0;
+    while (index < this.#catalog.length) {
+      const item = this.#catalog[index];
+  
+      const status = item.isAvailable() ? "Available" : "Checked Out";
+      console.log(`${index + 1}. ${item.getInfo()} - ${status}`);
+      index++;
+    }
+  }
+}
+ 
+const book1 = new Book("Cecelib", "Poss", "Frank Herbert", 412);          
+const book2 = new Book("Under the Roaring Thunders", "tyler", "Inerys", 328);       
+const movie1 = new Movie("marisullas", "My serinity in december", "ivan", 148); 
+const library = new Library(libraryName);                                
+ 
+
+const newArrivals = [book1, book2, movie1];
+ 
+newArrivals.forEach((item) => library.addItem(item));
+ 
+library.printCatalogSummary();
+console.log("\n" + library.checkOutItem("Dune"));
+console.log(library.checkOutItem("Dune")); 
+console.log(library.checkOutItem("Unknown Title"));
+ 
+console.log("\nAvailable items now:");
+console.log(library.listAvailableItems());
+ 
+console.log(`\nTotal checkouts so far: ${totalCheckouts}`);
+console.log(`Membership fine per day: $${membershipRules.finePerDay}`);
+ 
